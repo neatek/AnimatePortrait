@@ -129,11 +129,11 @@ class Image_translation_block():
             # ===========================================================
             if(opt_parser.comb_fan_awing):
                 if(opt_parser.fan_2or3D == '2D'):
-                    self.predictor = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D,
+                    self.predictor = face_alignment.FaceAlignment(face_alignment.LandmarksType.TWO_D,
                                                                   device='cuda' if torch.cuda.is_available() else "cpu",
                                                                   flip_input=True)
                 else:
-                    self.predictor = face_alignment.FaceAlignment(face_alignment.LandmarksType._3D,
+                    self.predictor = face_alignment.FaceAlignment(face_alignment.LandmarksType.TWO_D,
                                                                   device='cuda' if torch.cuda.is_available() else "cpu",
                                                                   flip_input=True)
 

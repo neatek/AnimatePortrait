@@ -50,7 +50,7 @@ class FaceSeg:
 class FaceDetect:
     def __init__(self, device, detector):
         # landmarks will be detected by face_alignment library. Set device = 'cuda' if use GPU.
-        self.fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device=device, face_detector=detector)
+        self.fa = face_alignment.FaceAlignment(face_alignment.LandmarksType.TWO_D, device=device, face_detector=detector)
 
     def align(self, image):
         landmarks = self.__get_max_face_landmarks(image)

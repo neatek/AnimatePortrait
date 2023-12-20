@@ -49,7 +49,7 @@ class Av2Flau_Convertor():
         self.input_format = self.video_dir[-4:]
 
         # landmark predictor = FANet
-        self.predictor = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cuda', flip_input=True)
+        self.predictor = face_alignment.FaceAlignment(face_alignment.LandmarksType.TWO_D, device='cuda', flip_input=True)
 
         # landmark register
         self.t_shape_idx = (27, 28, 29, 30, 33, 36, 39, 42, 45)
