@@ -2,7 +2,9 @@ import os
 import numpy as np
 import cv2
 import math
-import tensorflow as tf
+# import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 from tensorflow.python.platform import gfile
 import face_alignment
 import torch
