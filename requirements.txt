@@ -1,6 +1,7 @@
 ffmpeg-python
 opencv-python
 face_alignment
+scikit-image==0.17.2
 scikit-learn
 scipy
 pydub
