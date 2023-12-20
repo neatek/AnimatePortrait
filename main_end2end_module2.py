@@ -185,7 +185,7 @@ align_mtcnn(img_path, align_path, rerun=opt_parser.rerun)
 
 img = cv2.imread(align_path)
 print('reading', align_path)
-predictor = face_alignment.FaceAlignment(face_alignment.LandmarksType._3D, device='cuda', flip_input=True)
+predictor = face_alignment.FaceAlignment(face_alignment.LandmarksType.THREE_D, device='cuda', flip_input=True)
 shapes = predictor.get_landmarks(img)
 if (not shapes or len(shapes) != 1):
     print('Cannot detect face landmarks. Exit.')

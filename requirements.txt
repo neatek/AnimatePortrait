@@ -15,3 +15,4 @@ pillow
 dominate
 tensorflow-gpu==1.15.0
 dlib
+face_alignment
