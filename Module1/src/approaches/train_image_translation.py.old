@@ -367,7 +367,7 @@ class Image_translation_block():
             os.system('rm tmp_{:04d}.mp4'.format(i))
 
 
-    def single_test(self, jpg=None, fls=None, filename=None, prefix='', grey_only=False):
+    def single_test(self, jpg=None, fls=None, filename=None, prefix='', grey_only=False, output_single=False, output_both=False, output_dir='examples', output_landmark=False, landmark_dir='base+pose'):
         import time
         st = time.time()
         self.G.eval()
@@ -383,7 +383,15 @@ class Image_translation_block():
             fls[:, 0::3] += 130
             fls[:, 1::3] += 80
 
-        writer = cv2.VideoWriter('out.mp4', cv2.VideoWriter_fourcc(*'mjpg'), 62.5, (256, 256))
+        writer = None
+        writer_g = None
+        if output_both:
+            writer = cv2.VideoWriter('out.mp4', cv2.VideoWriter_fourcc(*'mjpg'), 62.5, (256 * 3, 256))
+            writer_g = cv2.VideoWriter('out_g.mp4', cv2.VideoWriter_fourcc(*'mjpg'), 62.5, (256, 256))
+        elif not output_both and not output_single:
+            writer = cv2.VideoWriter('out.mp4', cv2.VideoWriter_fourcc(*'mjpg'), 62.5, (256 * 3, 256))
+        elif not output_both and output_single:
+            writer_g = cv2.VideoWriter('out_g.mp4', cv2.VideoWriter_fourcc(*'mjpg'), 62.5, (256, 256))
 
         for i, frame in enumerate(fls):
 
@@ -417,18 +425,40 @@ class Image_translation_block():
                 g_out[:, :, :, 0:1] = g_out[:, :, :, 1:2] = g_out[:, :, :, 2:3] = g_out_grey
 
 
-            for i in range(g_out.shape[0]):
-                frame = g_out[i] * 255.0
-                writer.write(frame.astype(np.uint8))
+            for j in range(g_out.shape[0]):
+                #frame = np.concatenate((ref_in[i], g_out[i], fls_in[i]), axis=1) * 255.0
+                frame = np.concatenate((ref_in[j], g_out[j], np.expand_dims(img_fl,0)[j].astype(np.float32)/255.0), axis=1) * 255.0
+                if writer is not None:
+                    writer.write(frame.astype(np.uint8))
+                if writer_g is not None:
+                    writer_g.write((g_out[j]* 255.0).astype(np.uint8))
+                if output_landmark:
+                    cv2.imwrite('{}/{}.png'.format(landmark_dir, i), np.expand_dims(img_fl,0)[j])
 
-        writer.release()
+        if writer is not None:
+            writer.release()
+        if writer_g is not None:
+            writer_g.release()
         print('Time - only video:', time.time() - st)
 
         if(filename is None):
             filename = 'v'
-        os.system('ffmpeg -loglevel error -y -i out.mp4 -i {} -pix_fmt yuv420p -strict -2 examples/{}_{}.mp4'.format(
-            'examples/'+filename[9:-16]+'.wav',
-            prefix, filename[:-4]))
+        audioname = filename.split('_audio')[0]
+        if output_both:
+            os.system('ffmpeg -loglevel error -y -i out.mp4 -i {} -pix_fmt yuv420p -strict -2 {}/{}_{}.mp4'.format(
+            output_dir+'/'+audioname[9:]+'.wav',
+            output_dir, prefix, filename[:-4]))
+            os.system('ffmpeg -loglevel error -y -i out_g.mp4 -i {} -pix_fmt yuv420p -strict -2 {}/{}_{}_g.mp4'.format(
+            output_dir+'/'+audioname[9:]+'.wav',
+            output_dir, prefix, filename[:-4]))
+        elif not output_both and not output_single:
+            os.system('ffmpeg -loglevel error -y -i out.mp4 -i {} -pix_fmt yuv420p -strict -2 {}/{}_{}.mp4'.format(
+            output_dir+'/'+audioname[9:]+'.wav',
+            output_dir, prefix, filename[:-4]))
+        elif not output_both and output_single:
+            os.system('ffmpeg -loglevel error -y -i out_g.mp4 -i {} -pix_fmt yuv420p -strict -2 {}/{}_{}_g.mp4'.format(
+            output_dir+'/'+audioname[9:]+'.wav',
+            output_dir, prefix, filename[:-4]))
         # os.system('rm out.mp4')
 
         print('Time - ffmpeg add audio:', time.time() - st)
