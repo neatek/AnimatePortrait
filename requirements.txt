@@ -14,6 +14,6 @@ resemblyzer
 visdom
 pillow
 dominate
-tensorflow-gpu==2.8.0
+# tensorflow-gpu==2.15.0
 dlib
 face_alignment
